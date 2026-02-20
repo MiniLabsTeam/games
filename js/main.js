@@ -38,32 +38,49 @@ window.addEventListener('load', () => {
   const playerAddressInput = document.getElementById('player-address');
   const jwtTokenInput = document.getElementById('jwt-token');
   const carUidInput = document.getElementById('car-uid');
+  const panelStatus = document.getElementById('panel-status');
 
-  // Store credentials when they change
+  // Auto-fill from localStorage (set by Next.js game page)
+  const lsAddress = localStorage.getItem('wallet_address');
+  const lsToken   = localStorage.getItem('auth_token');
+  const lsCarUid  = localStorage.getItem('game_car_uid');
+  const lsBackend = localStorage.getItem('backend_url');
+
+  if (lsAddress && playerAddressInput) {
+    playerAddressInput.value = lsAddress;
+    window.playerAddress = lsAddress;
+  }
+  if (lsToken && jwtTokenInput) {
+    jwtTokenInput.value = lsToken;
+    window.gameAPI.setToken(lsToken);
+  }
+  if (lsCarUid && carUidInput) {
+    carUidInput.value = lsCarUid;
+    window.carUid = lsCarUid;
+  }
+  if (lsBackend) {
+    CONFIG.API_BASE_URL = lsBackend;
+    window.gameAPI.baseUrl = lsBackend;
+  }
+
+  if ((lsAddress || lsToken || lsCarUid) && panelStatus) {
+    panelStatus.textContent = '✅ Auto-filled from MiniLabs';
+  }
+
+  // Listen for manual changes
   if (playerAddressInput) {
-    // Use 'input' event for real-time updates
     playerAddressInput.addEventListener('input', (e) => {
       window.playerAddress = e.target.value;
-      console.log('Player address set:', window.playerAddress);
     });
-    // Also set initial value if present
-    if (playerAddressInput.value) {
-      window.playerAddress = playerAddressInput.value;
-      console.log('Player address initialized:', window.playerAddress);
-    }
   }
-
   if (jwtTokenInput) {
     jwtTokenInput.addEventListener('change', (e) => {
-      const token = e.target.value;
-      window.gameAPI.setToken(token);
+      window.gameAPI.setToken(e.target.value);
     });
   }
-
   if (carUidInput) {
     carUidInput.addEventListener('change', (e) => {
       window.carUid = e.target.value;
-      console.log('Car UID set:', window.carUid);
     });
   }
 
